@@ -42,7 +42,7 @@ jobs:
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "prod_configs/docker-compose.yml"
-          target: "website" # website folder
+          target: "shadow-realm" # website folder
       -
         name: deploy the container and start it
         uses: appleboy/ssh-action@master
