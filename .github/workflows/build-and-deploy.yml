@@ -48,14 +48,16 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           GIT_TOKEN: ${{ secrets.SHIP_IT }}
+          DISCORD_SECRET: ${{secrets.DISCORD_SECRET}}
         with:
           host: ${{ secrets.SSH_IP_ADDRESS }}
           username: root
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: git_token
+          envs: git_token, DISCORD_SECRET
           script: |
             echo "$GIT_TOKEN" | docker login ghcr.io -u drakumus --password-stdin
             docker pull ghcr.io/drakumus/shadow-realm-image:latest
             cd shadow-realm/prod_configs/
+            echo "$DISCORD_SECRET" > .env
             docker-compose up -d

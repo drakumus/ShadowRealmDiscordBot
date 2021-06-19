@@ -34,10 +34,6 @@ function AddBannedUser(member) {
   }
 }
 
-function RemoveBannedUser(member) {
-
-}
-
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
@@ -86,7 +82,7 @@ client.on('voiceStateUpdate', function (oldState, newState) {
   var horny_jail_channel_id = "849003967735791626" // stan
   // var horny_jail_channel_id = "855557361656528906" // dev
   if (newState.channelID == horny_jail_channel_id) {
-    console.log("You have entered the shadow-realm!!!!");
+    console.log(newState.member.displayName + " has been banished!");
     // store member
     AddBannedUser(newState.member);
   } else if (newState.channelID != horny_jail_channel_id) {
@@ -102,7 +98,8 @@ client.on('voiceStateUpdate', function (oldState, newState) {
       client.channels.fetch(horny_jail_channel_id).then(channel => {
         newState.member.voice.setChannel(channel).then(channel => {
           let random_index = Math.floor(Math.random() * insults.length)
-          newState.member.send(insults[random_index]);
+          newState.member.send(insults[random_index] + "\nWait your 30 seconds until you can leave. The jailor shows no mercy!");
+          console.log(newState.member.displayName + " attempted to escape!");
         }).catch(error => {
           // don't care if they left the server
         });
