@@ -1,7 +1,6 @@
 var Discord = require('discord.js');
 const { serialize } = require('v8');
 var logger = require('winston');
-var auth = require('./secrets.json');
 
 banned_users = {
 
@@ -50,7 +49,7 @@ logger.level = 'debug';
 // Initialize Discord Bot
 var client = new Discord.Client();
 
-client.login(auth["bot-token"]);
+client.login(process.env.BOT_TOKEN);
 
 client.on('ready', function (evt) {
   logger.info('Shadow Realm Initiated');
