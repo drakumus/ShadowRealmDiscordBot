@@ -1,0 +1,9 @@
+version: '3.0'
+services:
+  shadow_realm_discord_bot:
+    container_name: shadow_realm_discord_bot
+    build:
+      # defines build parameters. Not necessary because we have everything in root at the moment
+      dockerfile: ./Dockerfile
+      context: .
+    restart: always

@@ -1,0 +1,7 @@
+version: '3.0'
+services:
+  shadow_realm_discord_bot:
+    container_name: shadow_realm_discord_bot
+    image: ghcr.io/drakumus/shadow-realm-image:latest
+    restart: always
+  
