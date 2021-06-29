@@ -60,4 +60,4 @@ jobs:
             docker pull ghcr.io/drakumus/shadow-realm-image:latest
             cd shadow-realm/prod_configs/
             echo "$DISCORD_SECRET" > .env
-            docker-compose up -d
+            docker-compose up -d --remove-orphans
