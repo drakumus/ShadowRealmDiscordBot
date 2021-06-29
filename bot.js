@@ -100,7 +100,7 @@ client.on('voiceStateUpdate', function (oldState, newState) {
       client.channels.fetch(horny_jail_channel_id).then(channel => {
         newState.member.voice.setChannel(channel).then(channel => {
           let random_index = Math.floor(Math.random() * insults.length)
-          newState.member.send(insults[random_index] + "\nWait your 30 seconds until you can leave. The jailor shows no mercy!");
+          newState.member.send(insults[random_index] + "\nWait your" + NUM_BAN_SECONDS + "seconds until you can leave. The jailor shows no mercy!");
           console.log(newState.member.displayName + " attempted to escape!");
         }).catch(error => {
           // don't care if they left the server
