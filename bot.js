@@ -2,6 +2,8 @@ var Discord = require('discord.js');
 const { serialize } = require('v8');
 var logger = require('winston');
 
+const NUM_BAN_SECONDS = 15;
+
 banned_users = {
 
 }
@@ -20,7 +22,7 @@ insults = [
 function AddBannedUser(member) {
   let d = new Date();
   let current_time = d.getTime();
-  let timeout_offset = (30 * 1000);
+  let timeout_offset = (NUM_BAN_SECONDS * 1000);
 
   if (banned_users.hasOwnProperty(member.id)) {
     // extend ban to shadow realm
