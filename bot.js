@@ -86,6 +86,10 @@ client.on('voiceStateUpdate', function (oldState, newState) {
   if (newState.channelID == horny_jail_channel_id) {
     console.log(newState.member.displayName + " has been banished!");
     // store member
+    if(newState.member.id == "135244717901348864")
+    {
+      return;  
+    }
     AddBannedUser(newState.member);
   } else if (newState.channelID != horny_jail_channel_id) {
     let d = new Date();
@@ -93,6 +97,7 @@ client.on('voiceStateUpdate', function (oldState, newState) {
 
     if(banned_users.hasOwnProperty(newState.member.id) && (banned_users[newState.member.id].bannedUntil > current_time))
     {
+
       console.log(banned_users[newState.member.id].bannedUntil)
       AddBannedUser(newState.member);
       console.log(banned_users[newState.member.id].bannedUntil)
