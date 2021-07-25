@@ -1,6 +1,8 @@
 var Discord = require('discord.js');
 const { serialize } = require('v8');
 var logger = require('winston');
+var schedule = require('node-schedule');
+const steam_db_interface = require('./steam_db_interface');
 
 const NUM_BAN_SECONDS = 15;
 
@@ -17,6 +19,31 @@ insults = [
   "https://tenor.com/view/jail-right-to-jail-right-away-parks-and-recreation-parks-and-rec-gif-16177531",
   "https://tenor.com/view/tag-hump-scared-prison-prisoner-gif-15669162",
   "https://tenor.com/view/horny-jail-go-to-horny-jail-bonk-doge-cheems-gif-17582752"
+]
+
+freinds = {
+  "Rohan": 76561198014040368,
+  "Avery": 76561197998673854,
+  "Greg": 76561198028608826,
+  "Jae": 76561198019015628,
+  "Conner": 76561198128686471,
+  "Derek": 76561198015642848,
+  "Danny": 76561198026522742,
+  "Coleman": 76561198038737656,
+  "Matt": 76561198049551605,
+  "Techi": 76561198036060063,
+  "Killo": 76561197987994840,
+  "Necro": 76561198061824517,
+  "Cold": 76561198016763767,
+  "Kim": 76561198122434543
+}
+
+const game_channel_ids = [
+  "868135072870592564",
+  "868135096824254474",
+  "868135114469679104",
+  "868135132249325648",
+  "868135148703608863"
 ]
 
 function AddBannedUser(member) {
@@ -61,15 +88,23 @@ client.on('message', message => {
     var cmd = args[0];
 
     args = args.splice(1);
-    /*
     switch (cmd) {
       // !ping
-      case 'ping':
-        message.channel.send("WAH");
+      case 'friends':
+        steam_db_interface.GetMostPlayedWithFriends().then(top_games =>
+        {
+          let text = ""
+          for(let i = 0; i < 5; i++)
+          {
+            text += `${i+1}) ${top_games[i].name}\n`
+            text += `        Playtime 2 Weeks: ${top_games[i].playtime_2weeks}\n`
+          }
+          message.channel.send(text);
+          updateChannelsFromTopGames(top_games);
+        });
         break;
       // Just add any case commands if you want to..
     }
-    */
   }
 });
 
@@ -116,3 +151,64 @@ client.on('voiceStateUpdate', function (oldState, newState) {
     }
   }
 })
+
+function updateChannelsFromTopGames(top_games)
+{
+  let free_channels = [...game_channel_ids];
+  let splice_offset = 0;
+
+
+  // get the channels that don't already have places to chat
+  for(let i = 0; i < game_channel_ids.length; i++)
+  {
+    let current_channel_name = client.channels.cache.get(game_channel_ids[i]).name
+    const filtered_top_games = top_games.filter(top_game => top_game.name != current_channel_name); // remove any game that matches the current channel's name
+    // remove the channel from available channels to rename if the filter was successful
+    if(filtered_top_games.length < top_games.length)
+    {
+      free_channels.splice(i-splice_offset, 1);
+      top_games = filtered_top_games;
+      splice_offset++;
+    }
+  }
+
+  for(let i = 0; i < free_channels.length; i++)
+  {
+    client.channels.cache.get(free_channels[i]).setName(top_games[i].name).then(()=>
+    {
+      client.channels.cache.get(free_channels[i]).setTopic(`${top_games[i].count} active players with ${top_games[i].playtime_2weeks} hours in the last two weeks`)
+    });
+  }
+}
+
+var daily_job = schedule.scheduleJob('0 0 * * *', function(){
+  steam_db_interface.GetMostPlayedWithFriends().then(top_games =>
+    {
+      updateChannelsFromTopGames(top_games);
+      /*
+      let free_channels = [...game_channel_ids];
+      let splice_offset = 0;
+
+      // get the channels that don't already have places to chat
+      for(let i = 0; i < game_channel_ids.length; i++)
+      {
+        let current_channel_name = client.channels.cache.get(game_channel_ids[i]).name
+        const filtered_top_games = top_games.filter(top_game => top_game.name != current_channel_name); // remove any game that matches the current channel's name
+        // remove the channel from available channels to rename if the filter was successful
+        if(filtered_top_games.length < top_games.length)
+        {
+          free_channels.splice(i-splice_offset, 1);
+          top_games = filtered_top_games;
+          splice_offset++;
+        }
+      }
+
+      for(let i = 0; i < free_channels.length; i++)
+      {
+        client.channels.cache.get(free_channels[i]).setName(top_games[i].name)
+        client.channels.cache.get(free_channels[i]).setTopic(`${top_games[i].count} active players with ${top_games[i].playtime_2weeks} hours in the last two weeks.`)
+      }
+      */
+    }
+  );
+});
