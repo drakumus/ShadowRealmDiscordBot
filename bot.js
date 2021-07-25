@@ -103,6 +103,15 @@ client.on('message', message => {
           updateChannelsFromTopGames(top_games);
         });
         break;
+      case 'occupancy':
+        // get number of members with people roles
+        let occupancy = message.guild.roles.cache.get('867939680312770640').members.map(m=>m.user.id).length; // master
+        occupancy    += message.guild.roles.cache.get('867939680296009736').members.map(m=>m.user.id).length; // resident
+        occupancy    += message.guild.roles.cache.get('867939680312770638').members.map(m=>m.user.id).length; // commanding
+        occupancy    += message.guild.roles.cache.get('867939680296009735').members.map(m=>m.user.id).length; // guest
+        client.channels.cache.get('868947163852439562').setName(`Occupancy: ${occupancy}`);
+        break;
+        
       // Just add any case commands if you want to..
     }
   }
@@ -185,30 +194,26 @@ var daily_job = schedule.scheduleJob('0 0 * * *', function(){
   steam_db_interface.GetMostPlayedWithFriends().then(top_games =>
     {
       updateChannelsFromTopGames(top_games);
-      /*
-      let free_channels = [...game_channel_ids];
-      let splice_offset = 0;
 
-      // get the channels that don't already have places to chat
-      for(let i = 0; i < game_channel_ids.length; i++)
-      {
-        let current_channel_name = client.channels.cache.get(game_channel_ids[i]).name
-        const filtered_top_games = top_games.filter(top_game => top_game.name != current_channel_name); // remove any game that matches the current channel's name
-        // remove the channel from available channels to rename if the filter was successful
-        if(filtered_top_games.length < top_games.length)
-        {
-          free_channels.splice(i-splice_offset, 1);
-          top_games = filtered_top_games;
-          splice_offset++;
-        }
-      }
+      // set occupancy
+      let guild = client.guilds.cache.get('867939680296009728');
+      let occupancy = guild.roles.cache.get('867939680312770640').members.map(m=>m.user.id).length; // master
+      occupancy    += guild.roles.cache.get('867939680296009736').members.map(m=>m.user.id).length; // resident
+      occupancy    += guild.roles.cache.get('867939680312770638').members.map(m=>m.user.id).length; // commanding
+      occupancy    += guild.roles.cache.get('867939680296009735').members.map(m=>m.user.id).length; // guest
+      client.channels.cache.get('868947163852439562').setName(`Occupancy: ${occupancy}`);
 
-      for(let i = 0; i < free_channels.length; i++)
-      {
-        client.channels.cache.get(free_channels[i]).setName(top_games[i].name)
-        client.channels.cache.get(free_channels[i]).setTopic(`${top_games[i].count} active players with ${top_games[i].playtime_2weeks} hours in the last two weeks.`)
-      }
-      */
     }
   );
 });
+
+/*
+      // get number of members with people roles
+      let guild = client.guilds.cache.get('867939680296009728');
+      let occupancy = guild.get('867939680312770640').members.length; // master
+      occupancy    += guild.get('867939680312770638').members.length; // commanding
+      occupancy    += guild.get('867939680296009736').members.length; // Resident
+      occupancy    += guild.get('867939680296009735').members.length; // Guest
+
+      client.channels.cache.get('868947163852439562').setName(`Occupancy: ${occupancy}`);
+*/
