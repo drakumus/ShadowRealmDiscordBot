@@ -41,7 +41,7 @@ jobs:
           username: root
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "prod_configs/docker-compose.yml"
+          source: "prod_configs/shadow-realm/docker-compose.yml"
           target: "shadow-realm" # website folder
       -
         name: deploy the container and start it
@@ -58,6 +58,6 @@ jobs:
           script: |
             echo "$GIT_TOKEN" | docker login ghcr.io -u drakumus --password-stdin
             docker pull ghcr.io/drakumus/shadow-realm-image:latest
-            cd shadow-realm/prod_configs/
+            cd shadow-realm/prod_configs/shadow-realm/
             echo "$DISCORD_SECRET" > .env
             docker-compose up -d --remove-orphans
