@@ -5,4 +5,5 @@ services:
     image: ghcr.io/drakumus/shadow-realm-image:latest
     restart: always
     env_file: .env
+    init: true
   
